@@ -13,9 +13,9 @@
 - **No page data collection.** The content script reads the Telegram Web page only to place
   download buttons and to work out which media file you asked for. That information is used
   in-memory and never leaves your device.
-- **Network access is limited to Telegram.** Files are fetched from the same `web.telegram.org`
-  origin your signed-in tab is already using. The only host permission requested is
-  `https://web.telegram.org/*`.
+- **Network access is limited to Telegram.** Files are fetched using the media URLs your
+  signed-in tab has already requested — in practice the `web.telegram.org` origin you are signed
+  in to. The only host permission requested is `https://web.telegram.org/*`.
 
 Files you download are handled by your browser's normal download manager and saved to your
 computer, exactly as if you had used Telegram's own download button.

@@ -86,7 +86,7 @@ scripts plus two stylesheets.
 
 | File | Lines | Role |
 | --- | --- | --- |
-| `src/content.js` | 1,275 | Finds media elements, injects the buttons |
+| `src/content.js` | 1,275 | Finds media elements, injects the buttons, clicks Telegram's own Download button when a stream can't be resolved |
 | `src/page-downloader.js` | 473 | Fetches the file, reports progress, saves it |
 | `src/popup.js` | 139 | Renders the toolbar popup |
 | `src/background.js` | 86 | Transfer list, badge count, cancel routing |
@@ -101,6 +101,8 @@ grep -rn "fetch(\|XMLHttpRequest\|sendBeacon\|new WebSocket" src/
 Both fetch the media URL the Telegram tab already requested, so the extension adds no endpoints,
 analytics hosts or third-party servers of its own. The only hard-coded URL in the project is
 `https://web.telegram.org/`, used in `popup.js` to check whether the active tab is Telegram Web.
+When a URL can't be resolved, no substitute is invented: `content.js` clicks the page's own
+Download button (`triggerNativeViewerDownloadA`/`K`) and the tab saves the file itself.
 
 **3. Check the permissions.** `manifest.json` requests one host (`https://web.telegram.org/*`)
 and no API permissions at all.
@@ -149,12 +151,15 @@ Notes:
 ### Will using this get my Telegram account banned?
 
 No extension can promise that, so here is what it does and does not do. It does not log in
-separately, does not implement the Telegram API, and never sees your credentials: it reuses the
-session in your own signed-in tab, reading media URLs that tab has already fetched. It issues
-ordinary media `GET` requests from the page instead of driving Telegram's download button, at a
-pace it self-limits to 3 concurrent transfers. To Telegram, that traffic looks like the browser
-it already is. As with any client-side tooling, heavy or automated use is your own call — see
-the [disclaimer](#disclaimer).
+separately, does not implement the Telegram API, and never reads your credentials: it reuses the
+session in your own signed-in tab, using media URLs that tab has already fetched.
+
+Most downloads are its own `GET` requests for those URLs, queued at most 3 at a time. It is not
+purely passive, though: when no stream URL can be resolved — some videos, and audio in the Web A
+client, where an inline download button exists — it clicks Telegram's own Download button and lets
+the page save the file through its normal flow. Either way the traffic comes from a browser that
+is already streaming that media. As with any client-side tooling, heavy or automated use is your
+own call — see the [disclaimer](#disclaimer).
 
 ### Is this against Telegram's Terms of Service?
 
@@ -176,11 +181,13 @@ exists, which removes the warning. Unpacked extensions also never auto-update; s
 ### Can it read my messages?
 
 It can see the page — every content script can — and it must inspect the DOM to locate media
-elements and message IDs. What it does not do: parse or collect message text, store anything
-(`chrome.storage` is never used), or transmit page content anywhere. There is no telemetry and no
-request to any host other than the media URL your own tab is using. The injected page script talks
-only to this extension's content script via `window.postMessage`. That whole path is the ~2,000
-lines listed above.
+elements and message IDs. What it does not do: parse or collect message text (the DOM is searched
+for media elements and IDs; text is written to the extension's own buttons, never read out of the
+page), store anything (`chrome.storage`, `localStorage` and cookies are never touched), or send
+page content anywhere. There is no telemetry, and no request to any host other than the media URL
+your own tab is using. The page script and the content script exchange messages with
+`window.postMessage` inside the page, tagged by a source string, and nothing on that channel
+leaves the tab. That whole path is the ~2,000 lines listed above.
 
 ### How do I update it?
 
