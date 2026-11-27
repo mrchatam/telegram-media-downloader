@@ -161,9 +161,12 @@ npm run version:sync
 
 # 3. commit, tag and push — the release workflow builds and publishes the zip
 git commit -am "release: v$(node -p "require('./package.json').version")"
-git tag "v$(node -p "require('./package.json').version")"
+git tag -a "v$(node -p "require('./package.json').version")" -m "v$(node -p "require('./package.json').version")"
 git push --follow-tags
 ```
+
+Use an **annotated** tag (`-a`): `git push --follow-tags` ignores lightweight tags, so a
+`git tag v1.0.1` would be left behind and no release would be created.
 
 `.github/workflows/release.yml` then runs the checks, builds the archive, attaches it to a
 GitHub Release and uses the matching `CHANGELOG.md` section as release notes.
