@@ -1,0 +1,14 @@
+# Build output
+dist/
+*.zip
+
+# Dependencies (the project has none, kept for safety)
+node_modules/
+
+# Local tooling
+.freebuff/
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/

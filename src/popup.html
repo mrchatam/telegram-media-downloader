@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Telegram Media Downloader</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <img src="../icons/icon48.png" alt="" class="logo" />
+      <div>
+        <h1>TG Media Downloader</h1>
+        <p id="status-text" class="subtitle">Checking tab...</p>
+      </div>
+    </div>
+    <span class="badge">Unlimited</span>
+  </header>
+
+  <section class="actions">
+    <button id="btn-batch" class="btn-primary" disabled>
+      Download All Loaded Media
+    </button>
+  </section>
+
+  <section class="downloads-section">
+    <div class="downloads-header">
+      <span>Downloads</span>
+      <button id="btn-clear" class="btn-link">Clear done</button>
+    </div>
+    <div id="downloads-list" class="downloads-list">
+      <div class="empty">No downloads yet. Click Download on any media in Telegram Web.</div>
+    </div>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>

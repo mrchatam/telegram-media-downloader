@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/mrchatam/telegram-media-downloader/security/advisories/new
+    about: Please report security issues privately instead of opening a public issue.
+  - name: Question or usage help
+    url: https://github.com/mrchatam/telegram-media-downloader/discussions
+    about: Ask here if you are not sure whether something is a bug.

@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest a capability or a UI improvement
+title: "[feat] "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please keep requests within the project's scope: Telegram Web only, no accounts, no
+        server component, no telemetry.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the situation you are in, not only the solution you have in mind.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: client
+    attributes:
+      label: Which client would this apply to?
+      options:
+        - Both
+        - Web K (web.telegram.org/k)
+        - Web A (web.telegram.org/a)
+    validations:
+      required: true

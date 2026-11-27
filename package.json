@@ -1,0 +1,33 @@
+{
+  "name": "telegram-media-downloader",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Manifest V3 browser extension that adds unlimited downloads for videos, images, and audio on Telegram Web.",
+  "keywords": [
+    "chrome-extension",
+    "manifest-v3",
+    "telegram",
+    "telegram-web",
+    "media-downloader"
+  ],
+  "license": "MIT",
+  "author": "mrchatam",
+  "homepage": "https://github.com/mrchatam/telegram-media-downloader",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrchatam/telegram-media-downloader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mrchatam/telegram-media-downloader/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs",
+    "verify": "npm run check && npm test && npm run build",
+    "version:sync": "node scripts/check.mjs --fix-version"
+  }
+}

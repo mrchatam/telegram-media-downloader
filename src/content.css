@@ -1,0 +1,148 @@
+.tmd-btn-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 6px;
+}
+
+.tmd-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #c026d3 0%, #9333ea 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.3;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(147, 51, 234, 0.25);
+  transition: opacity 0.15s ease, transform 0.1s ease, filter 0.15s ease;
+  user-select: none;
+}
+
+.tmd-download-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.tmd-download-btn:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.tmd-download-btn:disabled {
+  opacity: 0.85;
+  cursor: wait;
+}
+
+.tmd-download-btn--batch {
+  width: auto;
+  min-width: 160px;
+  padding: 8px 14px;
+}
+
+.tmd-cancel-pill {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tmd-cancel-pill:hover {
+  background: rgba(255, 255, 255, 0.36);
+}
+
+.tmd-album-checkbox-host {
+  position: relative;
+}
+
+.tmd-album-checkbox {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 15;
+  width: 18px;
+  height: 18px;
+  accent-color: #c026d3;
+  cursor: pointer;
+}
+
+.tmd-viewer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(192, 38, 211, 0.9);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.tmd-viewer-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.tmd-viewer-btn:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.tmd-shared-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+.tmd-shared-item-btn {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 12;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(192, 38, 211, 0.92);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.tmd-shared-item-btn:hover {
+  transform: scale(1.06);
+}
+
+.tmd-shared-month-btn {
+  margin-left: auto;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #c026d3;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}

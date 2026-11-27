@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Validate manifest and sources
+        run: npm run check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Verify archive contents
+        run: |
+          set -euo pipefail
+          zip_file=$(ls dist/*.zip)
+          unzip -tq "$zip_file"
+          unzip -l "$zip_file" | grep -qE '[[:space:]]manifest\.json$'
+          unzip -l "$zip_file" | grep -qE '[[:space:]]src/content\.js$'
+          unzip -l "$zip_file" | grep -qE '[[:space:]]icons/icon128\.png$'
+          echo "Archive $zip_file looks loadable"
+
+      - name: Upload archive
+        if: matrix.node == 22
+        uses: actions/upload-artifact@v4
+        with:
+          name: telegram-media-downloader
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 14

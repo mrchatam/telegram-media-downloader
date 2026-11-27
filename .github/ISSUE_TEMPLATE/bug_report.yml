@@ -1,0 +1,77 @@
+name: Bug report
+description: Something is not downloading, a button is missing, or the page broke
+title: "[bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Selector breakage after a Telegram Web update is the most
+        common cause — the checklist below helps narrow it down quickly.
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      description: Shown on the extension card at `chrome://extensions`.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: client
+    attributes:
+      label: Telegram Web client
+      options:
+        - Web K (web.telegram.org/k)
+        - Web A (web.telegram.org/a)
+        - Both
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: "Chrome 141.0.7390.55 on Windows 11"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a chat with a video
+        2. Click Download under the video
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Include the button label or error text you see, and whether the popup listed a transfer.
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: |
+        From the Telegram tab, DevTools → Console. Paste warnings that mention `TMD` or any
+        red errors. Extension service worker errors (chrome://extensions → service worker) are
+        also useful.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I am signed in at web.telegram.org and reloaded the tab after installing.
+          required: true
+        - label: I am on the latest release of the extension.
+          required: true
