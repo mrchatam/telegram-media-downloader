@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-27
+
 ### Added
 
 - Copy button on messages with text, including channels where the page blocks selecting and
@@ -40,6 +42,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Zero-dependency build that produces an unpacked folder and a distributable zip archive.
 - GitHub Actions CI and automated release workflow.
 
-[Unreleased]: https://github.com/mrchatam/telegram-media-downloader/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/mrchatam/telegram-media-downloader/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/mrchatam/telegram-media-downloader/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/mrchatam/telegram-media-downloader/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/mrchatam/telegram-media-downloader/releases/tag/v1.0.0
