@@ -45,6 +45,13 @@ jobs:
           unzip -tq "$zip_file"
           unzip -l "$zip_file" | grep -qE '[[:space:]]manifest\.json$'
 
+      - name: Generate SHA-256 checksums
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum *.zip > SHA256SUMS
+          cat SHA256SUMS
+
       - name: Extract release notes from CHANGELOG
         run: |
           set -euo pipefail
@@ -57,6 +64,19 @@ jobs:
           if [ ! -s release-notes.md ]; then
             echo "See CHANGELOG.md for details." > release-notes.md
           fi
+          cat >> release-notes.md <<'NOTES'
+
+          ---
+
+          **Verify your download.** Save `SHA256SUMS` next to the archive, then:
+
+          ```bash
+          sha256sum -c SHA256SUMS        # macOS: shasum -a 256 -c SHA256SUMS
+          ```
+
+          The archive is built deterministically from this tag, so `npm run build` on the same
+          Node.js major version reproduces the same bytes. See “Verify it yourself” in the README.
+          NOTES
           cat release-notes.md
 
       - name: Publish release
@@ -64,7 +84,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh release create "$GITHUB_REF_NAME" dist/*.zip \
+          gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS \
             --title "Telegram Media Downloader ${GITHUB_REF_NAME#v}" \
             --notes-file release-notes.md \
             --verify-tag

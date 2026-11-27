@@ -76,6 +76,57 @@ Chromium-based browsers accept the same folder through their own "Load unpacked"
 Firefox is **not** supported: the extension relies on Manifest V3 service workers and
 `MAIN`-world content scripts.
 
+## Verify it yourself
+
+Installing an extension means trusting a stranger's code. This one is small enough to check in
+a few minutes, and every release ships a checksum you can compare.
+
+**1. Read the code.** No bundler, no minification, no dependencies, no remote code: four plain
+scripts plus two stylesheets.
+
+| File | Lines | Role |
+| --- | --- | --- |
+| `src/content.js` | 1,275 | Finds media elements, injects the buttons |
+| `src/page-downloader.js` | 473 | Fetches the file, reports progress, saves it |
+| `src/popup.js` | 139 | Renders the toolbar popup |
+| `src/background.js` | 86 | Transfer list, badge count, cancel routing |
+
+**2. Check the network surface.** There are exactly two `fetch` calls, both in
+`page-downloader.js`, and no `XMLHttpRequest`, `WebSocket` or `sendBeacon` anywhere:
+
+```bash
+grep -rn "fetch(\|XMLHttpRequest\|sendBeacon\|new WebSocket" src/
+```
+
+Both fetch the media URL the Telegram tab already requested, so the extension adds no endpoints,
+analytics hosts or third-party servers of its own. The only hard-coded URL in the project is
+`https://web.telegram.org/`, used in `popup.js` to check whether the active tab is Telegram Web.
+
+**3. Check the permissions.** `manifest.json` requests one host (`https://web.telegram.org/*`)
+and no API permissions at all.
+
+**4. Verify the download.** Each release attaches a `SHA256SUMS` file:
+
+```bash
+# save the .zip and SHA256SUMS in the same folder, then
+sha256sum -c SHA256SUMS            # macOS: shasum -a 256 -c SHA256SUMS
+```
+
+Expect `telegram-media-downloader-<version>.zip: OK`.
+
+**5. Rebuild and compare.** Builds are deterministic — fixed archive timestamps, sorted entries
+— so the published archive can be reproduced from the tag:
+
+```bash
+git checkout v1.0.1
+npm run build
+sha256sum dist/telegram-media-downloader-1.0.1.zip   # macOS: shasum -a 256 ...
+```
+
+On the same Node.js major version this prints the same hash as the release. A different Node or
+zlib build can compress differently; if your hash differs, compare contents instead — `unzip -l`
+and `unzip -p <zip> manifest.json` should match this repository at that tag.
+
 ## Usage
 
 1. Sign in at <https://web.telegram.org> (either the A or K client).
@@ -92,6 +143,56 @@ Notes:
   download shelf and history entry.
 - If Telegram Web changes its markup, buttons may stop appearing until the selectors are
   updated — see [Contributing](#contributing).
+
+## FAQ
+
+### Will using this get my Telegram account banned?
+
+No extension can promise that, so here is what it does and does not do. It does not log in
+separately, does not implement the Telegram API, and never sees your credentials: it reuses the
+session in your own signed-in tab, reading media URLs that tab has already fetched. It issues
+ordinary media `GET` requests from the page instead of driving Telegram's download button, at a
+pace it self-limits to 3 concurrent transfers. To Telegram, that traffic looks like the browser
+it already is. As with any client-side tooling, heavy or automated use is your own call — see
+the [disclaimer](#disclaimer).
+
+### Is this against Telegram's Terms of Service?
+
+This project is unofficial and not endorsed by Telegram. Telegram's
+[Terms of Service](https://telegram.org/tos) restrict scraping and unauthorised automation, and
+you are bound by them as an account holder. Saving media from your own conversations is normally
+fine; redistributing copyrighted material is not. If your intended use would break the ToS or
+someone's copyright, don't use this — that decision and its consequences are yours, not the
+maintainers'.
+
+### Why does Chrome warn about developer-mode extensions?
+
+Because it warns about anything not installed from the Web Store: on startup Chrome shows a
+"Disable developer mode extensions" bubble for extensions loaded from a folder. It is generic —
+Chrome cannot verify the publisher or deliver updates for an unpacked folder — and it is not a
+finding about this code. You can dismiss it each time, or install from a store listing once one
+exists, which removes the warning. Unpacked extensions also never auto-update; see below.
+
+### Can it read my messages?
+
+It can see the page — every content script can — and it must inspect the DOM to locate media
+elements and message IDs. What it does not do: parse or collect message text, store anything
+(`chrome.storage` is never used), or transmit page content anywhere. There is no telemetry and no
+request to any host other than the media URL your own tab is using. The injected page script talks
+only to this extension's content script via `window.postMessage`. That whole path is the ~2,000
+lines listed above.
+
+### How do I update it?
+
+Unpacked extensions never update themselves.
+
+- **Release-zip install:** download the new archive, replace the contents of your folder (keep the
+  same path), then click the reload icon for the extension on `chrome://extensions`.
+- **Cloned repository:** `git pull && npm run build`, copy the new `dist/` over the loaded folder,
+  reload.
+- **Store install:** automatic, once a listing exists.
+
+Your saved files are untouched by any of this; only the popup's in-memory transfer list resets.
 
 ## Permissions
 

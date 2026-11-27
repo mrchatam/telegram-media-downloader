@@ -39,6 +39,14 @@ jobs:
       - name: Build extension
         run: npm run build
 
+      - name: Check the build is reproducible
+        run: |
+          set -euo pipefail
+          cp dist/*.zip /tmp/first-build.zip
+          npm run build
+          cmp /tmp/first-build.zip dist/*.zip
+          echo "Two builds produced identical bytes"
+
       - name: Verify archive contents
         run: |
           set -euo pipefail
