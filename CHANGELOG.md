@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-27
+
+### Removed
+
+- `homepage_url` from the manifest; it pointed back at this repository and duplicated the
+  support links already shown on the extension card.
+
 ## [1.0.0] - 2026-11-27
 
 ### Added
@@ -26,5 +33,6 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Zero-dependency build that produces an unpacked folder and a distributable zip archive.
 - GitHub Actions CI and automated release workflow.
 
-[Unreleased]: https://github.com/mrchatam/telegram-media-downloader/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/mrchatam/telegram-media-downloader/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/mrchatam/telegram-media-downloader/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/mrchatam/telegram-media-downloader/releases/tag/v1.0.0

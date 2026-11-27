@@ -1,6 +1,6 @@
 {
   "name": "telegram-media-downloader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Manifest V3 browser extension that adds unlimited downloads for videos, images, and audio on Telegram Web.",
   "keywords": [

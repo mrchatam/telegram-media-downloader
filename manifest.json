@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Telegram Media Downloader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Download videos, images, and audio from Telegram Web without daily limits. Supports single and batch downloads.",
-  "homepage_url": "https://github.com/mrchatam/telegram-media-downloader",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
