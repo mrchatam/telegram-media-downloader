@@ -258,7 +258,8 @@
 
   function createCopyButton(label = "Copy Text") {
     const btn = createDownloadButton(label, "tmd-copy-btn");
-    btn.dataset.icon = "📋";
+    // A monochrome glyph keeps the icon the same weight as the download arrow
+    btn.dataset.icon = "⧉";
     setButtonIdle(btn, label);
     return btn;
   }
