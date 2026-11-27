@@ -7,6 +7,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Copy button on messages with text, including channels where the page blocks selecting and
+  copying. Text is read from the DOM and written with the async Clipboard API, with an
+  `execCommand` fallback. Quoted replies, forward headers, sender names, timestamps and the
+  extension's own controls are excluded; media captions copy with the message.
+
 ## [1.0.1] - 2026-11-27
 
 ### Removed

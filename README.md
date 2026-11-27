@@ -31,6 +31,7 @@ It talks only to `web.telegram.org` with the session you are already signed in t
 | --- | --- |
 | **Inline download buttons** | A Download button under every video, photo, audio and voice message in chats |
 | **Album selection** | Per-item checkboxes on albums, plus a single "Download Selected" action |
+| **Copy message text** | A Copy button on any message with text, including channels that block selecting and copying |
 | **Media viewer button** | Download from the full-screen viewer without closing and reopening it |
 | **Shared media panel** | One button per item and "Download All Shared Media" for the whole tab |
 | **No daily limit** | Own queue with 3 parallel transfers, so the page stays responsive |
@@ -40,7 +41,9 @@ It talks only to `web.telegram.org` with the session you are already signed in t
 
 Supported media: MP4/WebM/MOV/MKV video, JPEG/PNG/WebP/GIF images, and OGG/OPUS/MP3/M4A/AAC
 audio. Streamed videos are resolved to Telegram's progressive stream URL, so quality is not
-re-encoded or lost.
+re-encoded or lost. Copying reads the message text from the page and writes plain text to the
+clipboard, so it works where the page disables selection; captions are copied with their media,
+and quoted replies, forward headers and timestamps are left out.
 
 ## Install
 

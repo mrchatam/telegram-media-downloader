@@ -161,6 +161,149 @@
     return row;
   }
 
+  // ---------- Copy message text ----------
+
+  const MESSAGE_TEXT_SELECTORS = [".text-content", ".message", ".bubble-content"];
+  const TEXT_EXCLUDE_SELECTOR = [
+    ".time",
+    ".message-time",
+    ".time-inner",
+    "time",
+    ".message-title",
+    ".peer-title",
+    ".sender-title",
+    ".reactions",
+    ".reply",
+    ".EmbeddedMessage",
+    ".webpage",
+    ".WebPage",
+    ".forward-header",
+    ".tmd-btn-row",
+    "button",
+    "video",
+    "audio",
+    "img",
+    "canvas",
+    "svg"
+  ].join(", ");
+  // Text inside these belongs to a quoted reply, a forwarded block or a link preview,
+  // not to the message itself.
+  const TEXT_EXCLUDE_ANCESTOR_SELECTOR = [
+    ".reply",
+    ".EmbeddedMessage",
+    ".webpage",
+    ".WebPage",
+    ".forward-header",
+    ".tmd-btn-row"
+  ].join(", ");
+
+  function normalizeMessageText(raw) {
+    return (raw || "")
+      .replace(/\u00a0/g, " ")
+      .split("\n")
+      .map((line) => line.replace(/[ \t]+/g, " ").trimEnd())
+      .join("\n")
+      .replace(/^\s*\n+/, "")
+      .replace(/\n+\s*$/, "")
+      .trim();
+  }
+
+  function extractMessageText(node) {
+    // Work on a copy so timestamps, sender names, replies and the extension's own
+    // buttons never end up in the clipboard. Reading the DOM needs no text selection,
+    // so this also works where the page disables selecting and copying.
+    const clone = node.cloneNode(true);
+    clone.querySelectorAll(TEXT_EXCLUDE_SELECTOR).forEach((el) => el.remove());
+    clone.querySelectorAll("br").forEach((br) => br.replaceWith("\n"));
+    return normalizeMessageText(clone.textContent);
+  }
+
+  function getMessageText(wrapper) {
+    if (!wrapper) return "";
+    for (const selector of MESSAGE_TEXT_SELECTORS) {
+      for (const node of wrapper.querySelectorAll(selector)) {
+        if (!node.textContent?.trim()) continue;
+        if (node.closest(TEXT_EXCLUDE_ANCESTOR_SELECTOR)) continue;
+        const text = extractMessageText(node);
+        if (text) return text;
+      }
+    }
+    return "";
+  }
+
+  async function writeClipboard(text) {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // Needs a focused document and a user gesture; fall back to execCommand below
+    }
+    try {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.cssText = "position: fixed; top: -1000px; left: -1000px; opacity: 0;";
+      document.body.appendChild(area);
+      area.select();
+      area.setSelectionRange(0, area.value.length);
+      const ok = document.execCommand("copy");
+      area.remove();
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+
+  function createCopyButton(label = "Copy Text") {
+    const btn = createDownloadButton(label, "tmd-copy-btn");
+    btn.dataset.icon = "📋";
+    setButtonIdle(btn, label);
+    return btn;
+  }
+
+  async function copyMessageText(wrapper, btn) {
+    const text = getMessageText(wrapper);
+    if (!text) {
+      setButtonError(btn, "No text found");
+      return;
+    }
+    if (!(await writeClipboard(text))) {
+      setButtonError(btn, "Clipboard unavailable");
+      return;
+    }
+    const label = btn.dataset.defaultLabel || "Copy Text";
+    btn.disabled = false;
+    btn.replaceChildren();
+    const icon = document.createElement("span");
+    icon.textContent = "✓";
+    const done = document.createElement("span");
+    done.textContent = "Copied";
+    btn.append(icon, done);
+    setTimeout(() => {
+      if (btn.isConnected) setButtonIdle(btn, label);
+    }, 1400);
+  }
+
+  function ensureCopyRow(wrapper) {
+    if (wrapper.querySelector(".tmd-copy-btn")) return;
+    if (!getMessageText(wrapper)) return;
+    let row = wrapper.querySelector(":scope > .tmd-btn-row");
+    if (!row) {
+      row = createButtonRow();
+      row.classList.add("tmd-copy-row");
+      wrapper.appendChild(row);
+    }
+    const btn = createCopyButton();
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      copyMessageText(wrapper, btn);
+    });
+    row.appendChild(btn);
+  }
+
   const NON_MEDIA_ANCESTOR_SELECTOR =
     "a[href], .avatar, .Avatar, .name, .peer-title, .message-title, .sender-title, .reply, .EmbeddedMessage, .webpage, .WebPage, .forward-header, .forwarded-from";
 
@@ -186,7 +329,7 @@
     btn.disabled = false;
     btn.replaceChildren();
     const icon = document.createElement("span");
-    icon.textContent = "⬇";
+    icon.textContent = btn.dataset.icon || "⬇";
     const text = document.createElement("span");
     text.textContent = label;
     btn.append(icon, text);
@@ -421,7 +564,7 @@
   }
 
   function injectMessageButtonA(wrapper) {
-    if (wrapper.querySelector(":scope > .tmd-btn-row")) return;
+    if (wrapper.querySelector(":scope > .tmd-btn-row:not(.tmd-copy-row)")) return;
     const info = classifyWrapperA(wrapper);
     if (info.kind === "none") return;
 
@@ -768,7 +911,7 @@
   }
 
   function injectMessageButtonK(wrapper) {
-    if (wrapper.querySelector(":scope > .tmd-btn-row")) return;
+    if (wrapper.querySelector(":scope > .tmd-btn-row:not(.tmd-copy-row)")) return;
     const info = classifyWrapperK(wrapper);
     if (info.kind === "none") return;
 
@@ -1129,11 +1272,17 @@
     if (!version) return;
 
     if (version === "a") {
-      document.querySelectorAll(".message-content-wrapper").forEach(injectMessageButtonA);
+      document.querySelectorAll(".message-content-wrapper").forEach((wrapper) => {
+        injectMessageButtonA(wrapper);
+        ensureCopyRow(wrapper);
+      });
       injectViewerButton("a");
       injectSharedMediaA();
     } else {
-      document.querySelectorAll(".bubble-content-wrapper").forEach(injectMessageButtonK);
+      document.querySelectorAll(".bubble-content-wrapper").forEach((wrapper) => {
+        injectMessageButtonK(wrapper);
+        ensureCopyRow(wrapper);
+      });
       injectViewerButton("k");
       injectSharedMediaK();
     }
